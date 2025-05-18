@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生徒詳細ページ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Tailwindのgray-100 */
+        }
+        .content-section {
+            background-color: white;
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .section-title {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #1f2937; /* text-gray-800 */
+            margin-bottom: 1rem; /* mb-4 */
+            display: flex;
+            align-items: center;
+        }
+        .section-title i {
+            margin-right: 0.75rem; /* mr-3 */
+        }
+        .radar-chart-container { /* クラス名を変更 */
+            width: 100%;
+            max-width: 420px; /* 画像に合わせて少し幅を広げました */
+            height: 320px; /* 画像に合わせて少し高さを調整しました */
+            background-color: #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem; /* rounded-md */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            overflow: hidden; /* 画像がはみ出ないように */
+        }
+        .radar-chart-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* アスペクト比を保ちつつコンテナに収める */
+        }
+        .style-card {
+            background-color: #f9fafb; /* gray-50 */
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1rem; /* p-4 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .style-card-title {
+            font-weight: 600; /* font-semibold */
+            color: #111827; /* gray-900 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .style-card-english {
+            font-size: 0.875rem; /* text-sm */
+            color: #4b5563; /* gray-600 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .style-card-description {
+            font-size: 0.875rem; /* text-sm */
+            color: #374151; /* gray-700 */
+            line-height: 1.6;
+        }
+        .guideline-content h3.subsection-title { /* 指導方針内のH3 */
+            font-size: 1.15rem; /* text-lg相当 */
+            font-weight: 600; /* font-semibold */
+            color: #1f2937; /* text-gray-800 */
+            margin-top: 1.25rem; /* mt-5 */
+            margin-bottom: 0.75rem; /* mb-3 */
+            padding-bottom: 0.25rem; /* pb-1 */
+            border-bottom: 2px solid #d1d5db; /* border-gray-300 */
+        }
+        .guideline-content h4 {
+            font-size: 1.05rem; /* text-baseとlgの間くらい */
+            font-weight: 600; /* font-semibold */
+            margin-top: 1rem; /* mt-4 */
+            margin-bottom: 0.5rem; /* mb-2 */
+            color: #374151; /* gray-700 */
+        }
+         .guideline-content p, .guideline-content ul {
+            margin-bottom: 0.75rem; /* mb-3 */
+            color: #4b5563; /* gray-600 */
+            font-size: 0.95rem;
+            line-height: 1.7; /* 少し行間を広げる */
+        }
+        .guideline-content ul {
+            list-style-type: none; /* デフォルトの黒丸を消す */
+            padding-left: 0; /* 左のパディングをリセット */
+        }
+        .guideline-content ul li {
+            position: relative;
+            padding-left: 1.75rem; /* アイコン分のスペース */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .guideline-content ul li::before { /* カスタムリストマーカー */
+            content: "✓"; /* チェックマーク */
+            position: absolute;
+            left: 0.25rem; /* 少し右にずらす */
+            color: #10b981; /* Tailwindのemerald-500 */
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .guideline-content strong {
+            font-weight: 600;
+            color: #111827; /* gray-900 */
+        }
+        .guideline-content .example-box {
+            background-color: #fdfdea; /* 黄色みがかった背景 */
+            border: 1px solid #fde047; /* Tailwindのyellow-400 */
+            border-left-width: 4px; /* 左側の太線 */
+            padding: 0.75rem 1rem; /* p-3 py-4 */
+            margin-top: 0.5rem; /* mt-2 */
+            margin-bottom: 1rem; /* mb-4 */
+            border-radius: 0.375rem; /* rounded-md */
+            font-style: italic;
+        }
+        .guideline-content .equation-step {
+            background-color: #f0f9ff; /* sky-50 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', Courier, monospace; /* 等幅フォントで見やすく */
+        }
+        .highlight-x { color: #ef4444; /* red-500 */ font-weight: bold; }
+        .highlight-y { color: #3b82f6; /* blue-500 */ font-weight: bold; }
+        .highlight-const { color: #10b981; /* emerald-500 */ font-weight: bold; }
+
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-user-graduate mr-2"></i>鈴木一郎さんの詳細
+            </h1>
+            <div>
+                <a href="#" id="back-to-dashboard" class="text-blue-500 hover:text-blue-700 hover:underline">
+                    <i class="fas fa-arrow-left mr-1"></i>ダッシュボードに戻る
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-brain text-teal-500"></i>学習スタイル診断結果 (ILS)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <div>
+                    <div class="radar-chart-container">
+                        <img src="無題のプレゼンテーション.png" alt="ILSレーダーチャート診断結果">
+                        </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-xl text-gray-800 mb-3">診断サマリ：<span class="text-teal-600">感覚型‐視覚型‐活動型‐逐次的型</span></h3> 
+                    
+                    <div class="style-card">
+                        <h4 class="style-card-title">学習タイプ (Understanding)</h4>
+                        <p class="style-card-english text-orange-700 font-medium">感覚型 (Sensing)</p> 
+                        <p class="style-card-description">
+                            現実的で具体的な事実や手順を重視し、「どうやって解くか」を明確に知ることで安心する。抽象より実践を好む。
+                        </p>
+                    </div>
+
+                    <div class="style-card">
+                        <h4 class="style-card-title">知覚タイプ (Perception)</h4>
+                        <p class="style-card-english text-sky-700 font-medium">視覚型 (Visual)</p>
+                        <p class="style-card-description">
+                            図やグラフ、色分けされた情報、空間的な配置によって理解が促進される。
+                        </p>
+                    </div>
+
+                    <div class="style-card">
+                        <h4 class="style-card-title">情報入力タイプ (Input)</h4>
+                        <p class="style-card-english text-blue-700 font-medium">活動型 (Active)</p>
+                        <p class="style-card-description">
+                            手を動かしたり、声に出したり、他者とやり取りしたりすることで学びが深まる。自ら参加することが理解につながる。
+                        </p>
+                    </div>
+
+                    <div class="style-card">
+                        <h4 class="style-card-title">情報処理タイプ (Processing)</h4>
+                        <p class="style-card-english text-rose-700 font-medium">逐次的型 (Sequential)</p>
+                        <p class="style-card-description">
+                            順序立てて少しずつ理解を進めるタイプで、飛躍や省略のある説明よりもステップごとの丁寧な展開を好む。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-chalkboard-teacher text-indigo-500"></i>診断結果による指導方針 (感覚型‐視覚型‐活動型‐逐次的型)
+            </h2>
+            <div class="guideline-content"> 
+                
+                <h3 class="subsection-title">具体的な指導アプローチ例 (数学 - 連立一次方程式の場合)</h3>
+                
+                <p class="mb-4"><strong>例題:</strong> 連立一次方程式 2x + y = 5, x - y = 1 を解きなさい。</p>
+                
+                <h4><i class="fas fa-shopping-cart mr-2 text-orange-500"></i>1. 【感覚型】現実的なイメージで導入する</h4>
+                <p>まず、連立方程式が何を探すものなのか、具体的な場面と結びつけて説明します。</p>
+                <div class="example-box">
+                    「これは、2つの条件（式）を同時に満たす特別な数（x と y）を見つけるパズルのようなものです。例えば、リンゴ2個とミカン1個で合計500円、リンゴ1個とミカン1個では価格差が100円だったとします。このとき、リンゴとミカンそれぞれの値段はいくらでしょう？ このように、日常生活の中にも連立方程式の考え方が隠れています。」
+                </div>
+                <p>このように、単に計算方法を教えるのではなく、<strong>「何のためにこれを学ぶのか」</strong>という目的意識を持たせることで、感覚型の生徒は安心して学習に取り組めます。</p>
+
+                <h4><i class="fas fa-palette mr-2 text-sky-500"></i>2. 【視覚型】色分けや配置で情報を整理する</h4>
+                <p>式を視覚的に分かりやすく整理することで、視覚型の生徒の理解を助けます。</p>
+                <p>ホワイトボードやノートに式を書く際には、以下のように工夫します。</p>
+                <ul>
+                    <li><strong>色分け:</strong> x の項を<span class="highlight-x">赤色</span>、 y の項を<span class="highlight-y">青色</span>、定数項を<span class="highlight-const">緑色</span>で書くなど、役割ごとに色を使い分けます。
+                        <div class="my-2 p-2 bg-gray-50 rounded text-center">
+                            [イメージ: 2<span class="highlight-x">x</span> + <span class="highlight-y">y</span> = <span class="highlight-const">5</span> と <span class="highlight-x">x</span> - <span class="highlight-y">y</span> = <span class="highlight-const">1</span> が色分けされている様子]
+                        </div>
+                    </li>
+                    <li><strong>配置:</strong> 2つの式を縦に揃えて書き、各項がそろうように配置します。これにより、加減法の操作が見やすくなります。</li>
+                    <li><strong>図解:</strong> 必要に応じて、それぞれの式がグラフ上で直線を表し、その交点が解になることを簡単な図で示します。「2つの線が交わる一点を探しているんだよ」と伝えることで、視覚的なイメージと結びつけます。
+                        <div class="my-2 p-2 bg-gray-50 rounded text-center">
+                             [イメージ: 2本の直線が座標平面上で交わっている簡単なグラフ]
+                        </div>
+                    </li>
+                </ul>
+                <p>これにより、抽象的な数式が具体的な形や色として認識され、視覚型の生徒は構造を把握しやすくなります。</p>
+
+                <h4><i class="fas fa-shoe-prints mr-2 text-rose-500"></i>3. 【逐次的型・活動型】ステップを明確にし、手を動かす</h4>
+                <p>計算プロセスを明確なステップに分け、一つ一つの操作を確認しながら進めることで、逐次型の生徒は安心して取り組めます。また、実際に手を動かすことで活動型の生徒の理解も深まります。</p>
+                <p>加減法を用いた手順を、以下のようにステップごとに区切って提示し、生徒に<strong>1ステップずつ声に出しながら、手を動かして実行</strong>させます。</p>
+                
+                <div class="equation-step"><strong>ステップ1:</strong> 式を並べる<br>
+                    &nbsp;&nbsp; 2x + y = 5  --- (1)<br>
+                    &nbsp;&nbsp; x - y = 1   --- (2)
+                </div>
+                <div class="equation-step"><strong>ステップ2:</strong> y を消去するために、(1)式と(2)式を足す<br>
+                    &nbsp;&nbsp; (2x + y) + (x - y) = 5 + 1<br>
+                    &nbsp;&nbsp; 3x = 6
+                </div>
+                 <div class="equation-step"><strong>ステップ3:</strong> x の値を求める<br>
+                    &nbsp;&nbsp; 3x = 6 &implies; x = 2
+                </div>
+                <div class="equation-step"><strong>ステップ4:</strong> 求めた x=2 を(1)式 (または(2)式) に代入して y の値を求める<br>
+                    &nbsp;&nbsp; 2(2) + y = 5<br>
+                    &nbsp;&nbsp; 4 + y = 5 &implies; y = 1
+                </div>
+                <div class="equation-step"><strong>ステップ5:</strong> 解の確認 (検算)<br>
+                    &nbsp;&nbsp; 求めた解 (x, y) = (2, 1) を元の両方の式に代入して成り立つか確認する。<br>
+                    &nbsp;&nbsp; (1)式: 2(2) + 1 = 4 + 1 = 5 (OK)<br>
+                    &nbsp;&nbsp; (2)式: 2 - 1 = 1 (OK)
+                </div>
+
+                <p>各ステップの前後で、<strong>「次に何をすれば y が消えるかな？」「この計算で何がわかった？」</strong>といった質問を投げかけ、生徒自身に考えさせ、言語化させることが重要です（活動型）。</p>
+                <p>生徒には、計算過程で<strong>どの項が消去されたのか、どの値が求まったのかをマーカーで印をつけさせる</strong>など、視覚的なフィードバックを伴う活動を取り入れると、より効果的です（視覚型・活動型）。</p>
+
+                <h4><i class="fas fa-users mr-2 text-blue-500"></i>4. 【活動型・感覚型】ペアワークと類題で定着</h4>
+                <p>計算の構造に慣れてきたら、生徒同士で「自分の解き方を説明し合う」ペアワークを導入します。他者に説明することで、理解がより深まります（活動型）。</p>
+                <p>その後、係数や符号が少し異なる類題（例：3x + 2y = 8 と x - y = 1 など）を出題し、同じ手順で解けることを体験させます。これにより、「このやり方で解けるんだ」という<strong>成功体験を積み重ね、実践的なスキルとして定着</strong>させます（感覚型・逐次的型）。</p>
+                <p>生徒には、解法のステップをまとめた「手順カード」のようなものを作成させたり、チェックリスト形式で自分の進捗を確認させたりするのも良いでしょう。</p>
+
+
+                <h3 class="subsection-title mt-8">この指導方法のポイントまとめ</h3>
+                <ul>
+                    <li><strong>【感覚型】</strong> 計算の目的を具体的な買い物などの例で示し、「自分ごと」として捉えやすくする。</li>
+                    <li><strong>【視覚型】</strong> 式の項を色分けしたり、図形や配置を工夫したりして視覚的に整理し、情報構造を把握しやすくする。</li>
+                    <li><strong>【逐次的型】</strong> 計算のステップを明確に区切り、生徒がその都度、動作・計算・確認を繰り返せるプロセス型の学習を設計する。</li>
+                    <li><strong>【活動型】</strong> ただ計算するだけでなく、声に出したり、手を動かしたり、自分の解き方を説明したりする活動を通じて理解を深める。</li>
+                    <li>類題を用いた段階的な反復によって「この構造は再現できる」という確信を得させ、応用力へとつなげる。</li>
+                </ul>
+                <p class="mt-4">このように、「感覚型‐視覚型‐活動型‐逐次的型」の学習スタイルに合わせた指導を行うことで、生徒は安心して具体的な手順に取り組みながら、手を動かして確実に理解を積み重ねていくことができます。</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-robot text-orange-500"></i>前回の授業のAIフィードバック (2025年5月15日 数学)
+            </h2>
+            <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <h3 class="font-semibold text-lg text-orange-700 mb-2">サマリー</h3>
+                <p class="text-gray-700 mb-3 text-sm">
+                    前回の「方程式の応用」の授業では、特に文章題の図解による理解が進みました。一方、複数のステップを要する問題での途中計算における集中力の低下が見られました。発話量は平均的でしたが、質問の回数は少なめでした。
+                    (このフィードバックは、ドキュメントの「インタラクションログシステム」や「録画&音声文字起こし」から得られる情報をAIが分析・生成する想定です。)
+                </p>
+                <h4 class="font-medium text-orange-600 mb-1">良かった点:</h4>
+                <ul class="list-disc list-inside text-gray-600 text-sm space-y-1 mb-3">
+                    <li>図やグラフを用いた説明に対する理解度が非常に高かった。</li>
+                    <li>ホワイトボードでの解説時には、積極的にメモを取っていた。</li>
+                </ul>
+                <h4 class="font-medium text-orange-600 mb-1">改善提案:</h4>
+                <ul class="list-disc list-inside text-gray-600 text-sm space-y-1">
+                    <li>長時間の計算が続く場合は、5分程度の短い休憩を挟むか、タスクを細分化する。</li>
+                    <li>授業の最後に、理解が曖昧な点を質問する時間を意識的に設ける。</li>
+                    <li>関連する簡単な例題をもう一度解いてもらい、定着度を確認する。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-lightbulb text-purple-500"></i>次回の授業内容のAIによる指導方法提案 (2025年5月22日 数学 - 確率)
+            </h2>
+            <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                 <h3 class="font-semibold text-lg text-purple-700 mb-2">指導テーマ: 具体例と視覚化による確率概念の導入</h3>
+                <p class="text-gray-700 mb-3 text-sm">
+                    次回の「確率」の単元は、鈴木さんの感覚型・視覚型の特性を活かすチャンスです。抽象的な概念を具体的な事象に結び付け、図やシミュレーションを用いて理解を促しましょう。
+                    (この提案は、ドキュメントの「教師支援&ナレッジ共有」の「S_Rec.getTips()」のような機能で、生徒のILSや過去の学習データに基づいて生成される想定です。)
+                </p>
+                <h4 class="font-medium text-purple-600 mb-1">具体的なアプローチ案:</h4>
+                <ul class="list-disc list-inside text-gray-600 text-sm space-y-1 mb-3">
+                    <li><strong>導入:</strong> サイコロ投げやコイン投げなど、身近な例から確率の基本的な考え方を説明する。樹形図をホワイトボードに描きながら説明する。</li>
+                    <li><strong>展開:</strong>
+                        <ul class="list-circle list-inside ml-4 text-sm space-y-1">
+                            <li>複数のサイコロやカードを用いた複雑な確率問題に挑戦。ここでも図解を重視。</li>
+                            <li>簡単な確率シミュレーションツール（オンラインにあれば）を一緒に操作し、試行回数と結果の変動を視覚的に体験させる。</li>
+                        </ul>
+                    </li>
+                    <li><strong>演習:</strong> 類似問題を数問提示し、まずは一人で解かせてみる。詰まっている場合は、ヒントを図で示す。</li>
+                    <li><strong>まとめ:</strong> 学習したパターンの確率（例：P(A &cup; B) = P(A) + P(B) - P(A &cap; B)）をカード形式で整理し、視覚的に記憶できるようにする。</li>
+                </ul>
+                 <h4 class="font-medium text-purple-600 mb-1">AIからの追加アドバイス:</h4>
+                 <p class="text-gray-600 text-sm">
+                    鈴木さんは過去の成功体験を重視する傾向があります。確率の単元で正解できた問題は特に褒め、自信をつけさせることが重要です。また、間違えた場合も結果だけでなく、考え方のプロセスを評価する言葉をかけると良いでしょう。
+                 </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 text-gray-500 text-sm">
+        &copy; 2025 All-in-one SaaS Platform
+    </footer>
+
+    <script>
+        document.getElementById('back-to-dashboard').addEventListener('click', function(event) {
+            event.preventDefault();
+            // 実際のページ遷移の代わりにアラートを表示
+            alert('ダッシュボードに戻ります (実際のページ遷移を実装してください)');
+        });
+    </script>
+
+</body>
+</html>
